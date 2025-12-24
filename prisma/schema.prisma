@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                 String         @id @default(uuid())
+  email              String         @unique
+  name               String?
+  role               Role           @default(USER)
+  preferred_currency String         @default("INR")
+  cartItems          CartItem[]
+  products           Product[]
+  wishlistItems      WishlistItem[]
+}
+
+model Category {
+  categoryId      Int       @id @default(autoincrement()) @map("category_id")
+  categoryName    String    @map("category_name") @db.VarChar(100)
+  categoryPath    String?   @map("category_path") @db.VarChar(500)
+  description     String?
+  imageUrl        String?   @map("image_url") @db.VarChar(500)
+  metaTitle       String?   @map("meta_title") @db.VarChar(255)
+  metaDescription String?   @map("meta_description")
+  metaKeywords    String?   @map("meta_keywords")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  products        Product[]
+}
+
+model Brand {
+  brandId   String    @id @default(uuid()) @map("brand_id")
+  brandName String    @unique @map("brand_name") @db.VarChar(100)
+  createdAt DateTime  @default(now()) @map("created_at")
+  products  Product[]
+
+  @@map("brands")
+}
+
+model Product {
+  productId      String         @id @default(uuid()) @map("product_id")
+  by             String?
+  productName    String         @map("product_name") @db.VarChar(255)
+  description    String?
+  brandId        String?        @map("brand_id")
+  categoryId     Int?           @map("category_id")
+  price          Decimal        @db.Decimal(10, 2)
+  compareAtPrice Decimal?       @map("compare_at_price") @db.Decimal(10, 2)
+  cost           Decimal?       @db.Decimal(10, 2)
+  currency       String         @default("INR") @db.VarChar(3)
+  stockQuantity  Int            @default(0) @map("stock_quantity")
+  tags           String[]
+  viewCount      Int            @default(0) @map("view_count")
+  purchaseCount  Int            @default(0) @map("purchase_count")
+  avgRating      Decimal        @default(0) @map("avg_rating") @db.Decimal(2, 1)
+  reviewCount    Int            @default(0) @map("review_count")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  images         String[]
+  cartItems      CartItem[]
+  brand          Brand?         @relation(fields: [brandId], references: [brandId])
+  uploadedBy     User?          @relation(fields: [by], references: [id])
+  category       Category?      @relation(fields: [categoryId], references: [categoryId])
+  wishlistItems  WishlistItem[]
+}
+
+model CartItem {
+  cartItemId BigInt   @id @default(autoincrement())
+  userId     String
+  productId  String
+  quantity   Int      @default(1)
+  addedAt    DateTime @default(now())
+  product    Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+model WishlistItem {
+  wishlistId BigInt   @id @default(autoincrement())
+  userId     String
+  productId  String
+  addedAt    DateTime @default(now())
+  product    Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+enum Role {
+  USER
+  DEALER
+  ADMIN
+}
+
+enum ProductStatus {
+  active
+  inactive
+  draft
+  archived
+}
+
+enum ProductVisibility {
+  visible
+  hidden
+  catalog
+  search
+}
