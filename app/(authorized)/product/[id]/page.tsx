@@ -15,12 +15,14 @@ import {
 } from "@/components/ui/carousel"
 import { Card } from "@/components/ui/card"
 import { useQuery } from "@tanstack/react-query"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { getProductById } from "@/actions/getProducts"
 import { useProductActions } from "@/hooks/useProductActions"
 
 export default function ProductPage() {
   const { id } = useParams();
+  const router = useRouter();
+
   const { data: product, error, isLoading } = useQuery({
     queryKey: ['product', id],
     queryFn: async () => {
@@ -29,12 +31,12 @@ export default function ProductPage() {
     }
   })
   const [isNotSaved, setIsNotSaved] = useState(false);
-    const { cartMutation, wishlistMutation } = useProductActions({
+  const { cartMutation, wishlistMutation } = useProductActions({
     productId: id?.toString() || '',
     initialSaved: product?.isSaved ?? false,
     initialInCart: product?.inCart ?? false,
-    setSaved: () => {},
-    setInCart: () => {},
+    setSaved: () => { },
+    setInCart: () => { },
   })
   const [quantity, setQuantity] = useState<number>(product?.quantity ?? 1);
 
@@ -45,8 +47,8 @@ export default function ProductPage() {
       </div>
     )
   }
- 
- 
+
+
 
   if (error || !product) {
     return (
@@ -57,12 +59,45 @@ export default function ProductPage() {
   }
 
 
- 
-  
+
 
   const discount = Math.round(
     ((product.cost - product.price) / product.cost) * 100
   )
+
+
+
+  const handleBuyNow = () => {
+    try {
+      if (!product) return;
+
+      // Read existing checkout items (or empty array)
+     
+      // Clear existing checkout items
+      localStorage.removeItem("checkoutItems");
+
+      
+
+      // Add current product
+      const newItem = {
+        id: id,
+        name: product.productName,
+        price: parseFloat(product.price),
+        image: product.images?.[0],
+        quantity,
+      };
+
+      const updated = [newItem];
+
+      // Save back
+      localStorage.setItem("checkoutItems", JSON.stringify(updated));
+
+      // Redirect (optional)
+      router.push("/checkout");
+    } catch (error) {
+      console.log("Error in handleBuyNow :", error);
+    }
+  };
 
 
   return (
@@ -136,7 +171,8 @@ export default function ProductPage() {
               value={quantity}
               onChange={(e) => {
                 setQuantity(Number(e.target.value))
-                setIsNotSaved(true);}}
+                setIsNotSaved(true);
+              }}
               className="w-24"
             />
             {
@@ -153,7 +189,7 @@ export default function ProductPage() {
 
           {/* Actions */}
           <div className="flex flex-col gap-3">
-            <Button size="lg" className="w-full" disabled={quantity > product.stockQuantity}>
+            <Button size="lg" className="w-full" disabled={quantity > product.stockQuantity} onClick={handleBuyNow}>
               Buy Now
             </Button>
 
@@ -163,7 +199,7 @@ export default function ProductPage() {
                   cartMutation.mutate(quantity);
                   setIsNotSaved(false);
                 }}
-                
+
               >
                 {
                   product.inCart && isNotSaved == false ? 'Added to Cart' : 'Add to Cart'
@@ -176,9 +212,9 @@ export default function ProductPage() {
                   wishlistMutation.mutate();
                 }}
               >
-               {
-                  product.isSaved ? <Heart className="text-red-600" /> : <Heart />
-               }
+                {
+                  product.isSaved ? <Heart className="fill-red-600 text-red-600" /> : <Heart />
+                }
               </Button>
             </div>
           </div>

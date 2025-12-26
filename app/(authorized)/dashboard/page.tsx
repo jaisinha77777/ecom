@@ -1,5 +1,6 @@
 'use client'
 import { getUserRole } from '@/actions/getUserRole';
+import UserDashboard from '@/components/UserDashboard';
 import { useUser } from '@clerk/nextjs';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react'
@@ -29,7 +30,7 @@ const page = () => {
             
         ) : (
             <div>
-               User Dashboard
+               <UserDashboard /> 
             </div>
         )
     }

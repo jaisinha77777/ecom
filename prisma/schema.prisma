@@ -16,6 +16,8 @@ model User {
   cartItems          CartItem[]
   products           Product[]
   wishlistItems      WishlistItem[]
+  userAddresses      UserAddress[]
+  orders             Order[]
 }
 
 model Category {
@@ -66,7 +68,9 @@ model Product {
   uploadedBy     User?          @relation(fields: [by], references: [id])
   category       Category?      @relation(fields: [categoryId], references: [categoryId])
   wishlistItems  WishlistItem[]
+  orderItems     OrderItem[]
 }
+
 
 model CartItem {
   cartItemId BigInt   @id @default(autoincrement())
@@ -109,4 +113,102 @@ enum ProductVisibility {
   hidden
   catalog
   search
+}
+
+model UserAddress {
+  address_id    BigInt  @id @default(autoincrement())
+  user_id       String
+  name          String
+  user          User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  address_line1 String
+  address_line2 String?
+  city          String
+  state         String
+  pincode       String
+
+  last_used  DateTime @default(now())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  orders     Order[]
+
+  @@index([user_id], name: "idx_user_addresses_user")
+  @@map("user_addresses")
+}
+
+enum OrderStatus {
+  pending
+  processing
+  confirmed
+  shipped
+  delivered
+  cancelled
+  refunded
+  failed
+}
+
+enum PaymentStatus {
+  pending
+  processing
+  paid
+  partial
+  failed
+  refunded
+}
+
+// ---------- MODELS ----------
+
+model Order {
+  order_id String @id @default(uuid()) 
+  user_id      String
+  user         User   @relation(fields: [user_id], references: [id], onDelete: Restrict)
+
+  status         OrderStatus   @default(pending)
+  payment_status PaymentStatus @default(pending)
+
+  subtotal        Decimal @db.Decimal(10, 2)
+  tax_amount      Decimal @default(0) @db.Decimal(10, 2)
+  shipping_amount Decimal @default(0) @db.Decimal(10, 2)
+  discount_amount Decimal @default(0) @db.Decimal(10, 2)
+  total_amount    Decimal @db.Decimal(10, 2)
+
+  currency       String  @default("INR") @db.VarChar(3)
+  payment_method String? @db.VarChar(50)
+
+  shipping_address_id BigInt?
+  shippingAddress     UserAddress? @relation(fields: [shipping_address_id], references: [address_id])
+
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  shipped_at   DateTime?
+  delivered_at DateTime?
+
+  items OrderItem[]
+
+  @@index([user_id], name: "idx_orders_user")
+  @@index([status], name: "idx_orders_status")
+  @@index([created_at], name: "idx_orders_created")
+}
+
+model OrderItem {
+  order_item_id BigInt @id @default(autoincrement())
+
+  order_id String
+  order    Order  @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+
+  product_id String
+  product    Product @relation(fields: [product_id], references: [productId], onDelete: Restrict)
+
+  product_name    String  @db.VarChar(255)
+  quantity        Int
+  price           Decimal @db.Decimal(10, 2)
+  discount_amount Decimal @default(0) @db.Decimal(10, 2)
+  tax_amount      Decimal @default(0) @db.Decimal(10, 2)
+  total_amount    Decimal @db.Decimal(10, 2)
+
+  fulfillment_status String? @default("pending") @db.VarChar(50)
+  returned_quantity  Int     @default(0)
+  refunded_amount    Decimal @default(0) @db.Decimal(10, 2)
+
+  @@index([order_id], name: "idx_order_items_order")
+  @@index([product_id], name: "idx_order_items_product")
 }
