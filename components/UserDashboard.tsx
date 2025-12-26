@@ -17,6 +17,7 @@ import { AddAddressForm } from "./AddAddressForm";
 import { AddressesList } from "./AddressList";
 import Link from "next/link";
 import OrdersPage from "./Orders";
+import YourReviews from "./YourReviews";
 
 export default function DashboardPage() {
   const [phone, setPhone] = useState("");
@@ -109,9 +110,7 @@ export default function DashboardPage() {
               <CardTitle>Your Reviews</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">
-                You haven’t submitted any reviews yet.
-              </p>
+              <YourReviews />
             </CardContent>
           </Card>
         </TabsContent>

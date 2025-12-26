@@ -8,16 +8,17 @@ datasource db {
 }
 
 model User {
-  id                 String         @id @default(uuid())
-  email              String         @unique
+  id                 String          @id @default(uuid())
+  email              String          @unique
   name               String?
-  role               Role           @default(USER)
-  preferred_currency String         @default("INR")
+  role               Role            @default(USER)
+  preferred_currency String          @default("INR")
   cartItems          CartItem[]
   products           Product[]
   wishlistItems      WishlistItem[]
   userAddresses      UserAddress[]
   orders             Order[]
+  productReviews     ProductReview[]
 }
 
 model Category {
@@ -44,33 +45,32 @@ model Brand {
 }
 
 model Product {
-  productId      String         @id @default(uuid()) @map("product_id")
+  productId      String          @id @default(uuid()) @map("product_id")
   by             String?
-  productName    String         @map("product_name") @db.VarChar(255)
+  productName    String          @map("product_name") @db.VarChar(255)
   description    String?
-  brandId        String?        @map("brand_id")
-  categoryId     Int?           @map("category_id")
-  price          Decimal        @db.Decimal(10, 2)
-  compareAtPrice Decimal?       @map("compare_at_price") @db.Decimal(10, 2)
-  cost           Decimal?       @db.Decimal(10, 2)
-  currency       String         @default("INR") @db.VarChar(3)
-  stockQuantity  Int            @default(0) @map("stock_quantity")
+  brandId        String?         @map("brand_id")
+  categoryId     Int?            @map("category_id")
+  price          Decimal         @db.Decimal(10, 2)
+  compareAtPrice Decimal?        @map("compare_at_price") @db.Decimal(10, 2)
+  cost           Decimal?        @db.Decimal(10, 2)
+  currency       String          @default("INR") @db.VarChar(3)
+  stockQuantity  Int             @default(0) @map("stock_quantity")
   tags           String[]
-  viewCount      Int            @default(0) @map("view_count")
-  purchaseCount  Int            @default(0) @map("purchase_count")
-  avgRating      Decimal        @default(0) @map("avg_rating") @db.Decimal(2, 1)
-  reviewCount    Int            @default(0) @map("review_count")
-  createdAt      DateTime       @default(now()) @map("created_at")
-  updatedAt      DateTime       @updatedAt @map("updated_at")
+  viewCount      Int             @default(0) @map("view_count")
+  purchaseCount  Int             @default(0) @map("purchase_count")
+  reviewCount    Int             @default(0) @map("review_count")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
   images         String[]
   cartItems      CartItem[]
-  brand          Brand?         @relation(fields: [brandId], references: [brandId])
-  uploadedBy     User?          @relation(fields: [by], references: [id])
-  category       Category?      @relation(fields: [categoryId], references: [categoryId])
+  brand          Brand?          @relation(fields: [brandId], references: [brandId])
+  uploadedBy     User?           @relation(fields: [by], references: [id])
+  category       Category?       @relation(fields: [categoryId], references: [categoryId])
   wishlistItems  WishlistItem[]
   orderItems     OrderItem[]
+  productReviews ProductReview[]
 }
-
 
 model CartItem {
   cartItemId BigInt   @id @default(autoincrement())
@@ -158,9 +158,9 @@ enum PaymentStatus {
 // ---------- MODELS ----------
 
 model Order {
-  order_id String @id @default(uuid()) 
-  user_id      String
-  user         User   @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  order_id String @id @default(uuid())
+  user_id  String
+  user     User   @relation(fields: [user_id], references: [id], onDelete: Restrict)
 
   status         OrderStatus   @default(pending)
   payment_status PaymentStatus @default(pending)
@@ -182,7 +182,8 @@ model Order {
   shipped_at   DateTime?
   delivered_at DateTime?
 
-  items OrderItem[]
+  items          OrderItem[]
+  productReviews ProductReview[]
 
   @@index([user_id], name: "idx_orders_user")
   @@index([status], name: "idx_orders_status")
@@ -211,4 +212,29 @@ model OrderItem {
 
   @@index([order_id], name: "idx_order_items_order")
   @@index([product_id], name: "idx_order_items_product")
+}
+
+model ProductReview {
+  review_id String @id @default(uuid())
+
+  product_id String
+  user_id    String
+
+  rating      Int
+  title       String?
+  review_text String?
+
+  helpful_count     Int @default(0)
+  not_helpful_count Int @default(0)
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  product       Product @relation(fields: [product_id], references: [productId], onDelete: Cascade)
+  user          User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  order         Order?  @relation(fields: [orderOrder_id], references: [order_id])
+  orderOrder_id String?
+
+  @@unique([product_id, user_id])
 }

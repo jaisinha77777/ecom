@@ -18,6 +18,8 @@ import { useQuery } from "@tanstack/react-query"
 import { useParams, useRouter } from "next/navigation"
 import { getProductById } from "@/actions/getProducts"
 import { useProductActions } from "@/hooks/useProductActions"
+import Reviews from "@/components/Reviews"
+import StarRating from "@/components/StarRating"
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -65,6 +67,8 @@ export default function ProductPage() {
     ((product.cost - product.price) / product.cost) * 100
   )
 
+  
+
 
 
   const handleBuyNow = () => {
@@ -72,11 +76,11 @@ export default function ProductPage() {
       if (!product) return;
 
       // Read existing checkout items (or empty array)
-     
+
       // Clear existing checkout items
       localStorage.removeItem("checkoutItems");
 
-      
+
 
       // Add current product
       const newItem = {
@@ -134,12 +138,8 @@ export default function ProductPage() {
           <h1 className="text-3xl font-bold">{product.productName}</h1>
 
           {/* Rating Placeholder */}
-          <div className="flex items-center gap-2 text-muted-foreground">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="h-4 w-4" />
-            ))}
-            <span className="text-sm">(Reviews coming soon)</span>
-          </div>
+         
+
 
           {/* Pricing */}
           <div className="flex items-center gap-3">
@@ -224,9 +224,9 @@ export default function ProductPage() {
             <h2 className="text-xl font-semibold mb-2">
               Reviews & Ratings
             </h2>
-            <p className="text-muted-foreground">
-              ⭐ Reviews and comments will be displayed here.
-            </p>
+            <div className="text-muted-foreground">
+              <Reviews productId={id} />
+            </div>
           </div>
 
         </div>

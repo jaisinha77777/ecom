@@ -28,31 +28,58 @@ export async function createOrder({
         checkoutItems.forEach(item => {
             subtotal += item.price * item.quantity;
         });
-        const order = await prisma.order.create({
-            data: {
-                user_id: userId,
-                subtotal: subtotal,
-                total_amount: subtotal,
-                status: "pending",
-                payment_method: paymentMethod,
-                shipping_address_id: addressId,
-            }
-        });
+        await prisma.$transaction(async (tx) => {
 
-        for (const item of checkoutItems) {
-            await prisma.orderItem.create({
+            const { userId } = await auth();
+            if (!userId) throw new Error("Not authenticated");
+
+            let subtotal = checkoutItems.reduce(
+                (sum, i) => sum + i.price * i.quantity,
+                0
+            );
+
+            const order = await tx.order.create({
                 data: {
-                    order_id: order.order_id,
-                    product_id: item.id,
-                    quantity: item.quantity,
-                    price: item.price,
-                    product_name: item.name,
-                    total_amount: item.price * item.quantity,
+                    user_id: userId,
+                    subtotal,
+                    total_amount: subtotal,
+                    status: "confirmed",
+                    payment_method: paymentMethod,
+                    shipping_address_id: addressId,
                 }
             });
-        }
 
-        return order.order_id;
+            for (const item of checkoutItems) {
+
+                // lock + update stock safely
+                const updated = await tx.product.update({
+                    where: {
+                        productId: item.id,
+                        stockQuantity: { gte: item.quantity } // ensure enough stock
+                    },
+                    data: {
+                        stockQuantity: { decrement: item.quantity }
+                    }
+                });
+
+                // if product didn’t update → stock insufficient
+                if (!updated) throw new Error("Insufficient stock");
+
+                await tx.orderItem.create({
+                    data: {
+                        order_id: order.order_id,
+                        product_id: item.id,
+                        quantity: item.quantity,
+                        price: item.price,
+                        product_name: item.name,
+                        total_amount: item.price * item.quantity,
+                    }
+                });
+            }
+
+            return order.order_id;
+        });
+
     } catch (error) {
         console.log("Error in createOrderFromCart action :", error);
         return null;
