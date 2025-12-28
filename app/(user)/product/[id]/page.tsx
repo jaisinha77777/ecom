@@ -16,7 +16,7 @@ import {
 import { Card } from "@/components/ui/card"
 import { useQuery } from "@tanstack/react-query"
 import { useParams, useRouter } from "next/navigation"
-import { getProductById } from "@/actions/getProducts"
+import { getProductById } from "@/actions/productActions"
 import { useProductActions } from "@/hooks/useProductActions"
 import Reviews from "@/components/Reviews"
 import StarRating from "@/components/StarRating"

@@ -57,45 +57,42 @@ export default function ProductCard({
       onClick={() => router.push(`/product/${id}`)}
     >
       {/* Product Image */}
-      <div className="relative overflow-hidden rounded-t-2xl bg-muted">
-        <Image
-          src={image}
-          alt={name}
-          className="w-full object-cover transition-transform duration-300 hover:scale-105"
-          width={400}
-          height={500}
-        />
+     <div className="relative h-64 overflow-hidden rounded-t-2xl bg-muted">
+  <Image
+    src={image}
+    alt={name}
+    width={400}
+    height={500}
+    className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+  />
 
-        {discount > 0 && (
-          <Badge className="absolute top-3 left-3 bg-green-600 text-white">
-            {discount}% OFF
-          </Badge>
-        )}
+  {discount > 0 && (
+    <Badge className="absolute top-3 left-3 bg-green-600 text-white">
+      {discount}% OFF
+    </Badge>
+  )}
 
-        {stockQuantity <= 10 && (
-          <Badge className="absolute bottom-3 left-3 bg-red-600 text-white">
-            Only {stockQuantity} left in stock
-          </Badge>
-        )}
+  {stockQuantity <= 10 && (
+    <Badge className="absolute bottom-3 left-3 bg-red-600 text-white">
+      Only {stockQuantity} left in stock
+    </Badge>
+  )}
 
-        {/* Wishlist Button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            wishlistMutation.mutate();
-          }}
-          disabled={wishlistMutation.isPending}
-          className="absolute top-3 right-3 rounded-full bg-background/80 p-2 backdrop-blur hover:bg-background"
-        >
-          <Heart
-            className={`h-5 w-5 transition-colors ${
-              saved
-                ? "fill-red-500 text-red-500"
-                : "text-muted-foreground"
-            }`}
-          />
-        </button>
-      </div>
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      wishlistMutation.mutate();
+    }}
+    disabled={wishlistMutation.isPending}
+    className="absolute top-3 right-3 rounded-full bg-background/80 p-2 backdrop-blur hover:bg-background"
+  >
+    <Heart
+      className={`h-5 w-5 transition-colors ${
+        saved ? "fill-red-500 text-red-500" : "text-muted-foreground"
+      }`}
+    />
+  </button>
+</div>
 
       <CardContent className="p-4 space-y-2">
         <div className="flex items-center justify-between text-sm text-muted-foreground">
@@ -115,7 +112,7 @@ export default function ProductCard({
         </div>
 
         <Button
-          className="w-full mt-2 rounded-xl"
+          className="w-full mt-2 rounded-xl "
           disabled={inCartState || cartMutation.isPending}
           onClick={(e) => {
             e.stopPropagation();

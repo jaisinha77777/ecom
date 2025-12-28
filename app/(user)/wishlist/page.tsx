@@ -1,5 +1,5 @@
 'use client'
-import { getWishList } from '@/actions/getProducts';
+import { getWishList } from '@/actions/productActions';
 import WishListProduct from '@/components/WishlistProductCard';
 import { useQuery } from '@tanstack/react-query';
 import { Heart } from 'lucide-react';

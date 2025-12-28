@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { CartProduct } from "@/components/CartProductCard";
 import { useQuery } from "@tanstack/react-query";
-import { getCartItems } from "@/actions/getProducts";
+import { getCartItems } from "@/actions/productActions";
 import { useRouter } from "next/navigation";
 
 export default function CartPage() {

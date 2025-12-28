@@ -1,5 +1,5 @@
 'use client'
-import { getProductsByCategory } from '@/actions/getProducts'
+import { getProductsByCategory } from '@/actions/productActions'
 import ProductCard from '@/components/ProductCard'
 import { useCategory } from '@/components/providers/CategoriesProvider'
 import { useQuery } from '@tanstack/react-query'

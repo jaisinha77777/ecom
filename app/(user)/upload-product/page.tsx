@@ -23,6 +23,7 @@ import Image from "next/image"
 import {  TrashIcon, UploadIcon } from "lucide-react"
 import { uploadProduct } from "@/actions/uploadProduct"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useUserRole } from "@/hooks/useUserRole"
 
 /* ---------------------------------- */
 /* UI Helpers                         */
@@ -82,9 +83,9 @@ const SectionHeader = ({
 /* Page                               */
 /* ---------------------------------- */
 
-const Page = () => {
+const UploadProduct = () => {
     const [images, setImages] = useState<File[]>([])
-
+    
     const form = useForm<z.infer<typeof productSchema>>({
         resolver: zodResolver(productSchema),
         defaultValues: {
@@ -103,7 +104,10 @@ const Page = () => {
     async function onSubmit(data: z.infer<typeof productSchema>) {
         // pass images as formdata
         const formData = new FormData() ;
-        
+        if(images.length == 0){
+            alert("Please upload at least one image.")
+            return
+        }
         const res = await uploadProduct(data, images)
         console.log(res)
 
@@ -242,10 +246,13 @@ const Page = () => {
                                 <Controller
                                     name="cost"
                                     control={form.control}
-                                    render={({ field }) => (
+                                    render={({ field, fieldState }) => (
                                         <Field>
                                             <FieldLabel>MRP (₹)</FieldLabel>
                                             <Input {...field} type="number" step="0.01" />
+                                            {fieldState.error && (
+                                                <FieldError errors={[fieldState.error]} />
+                                            )}
                                         </Field>
                                     )}
                                 />
@@ -357,7 +364,7 @@ const Page = () => {
             {/* ---------------------------------- */}
             {/* STICKY ACTION BAR                  */}
             {/* ---------------------------------- */}
-            <div className="sticky bottom-0 mt-10 bg-background/80 backdrop-blur border-t p-4 flex justify-end">
+            <div className="sticky bottom-0 mt-10  backdrop-blur p-4 flex justify-end">
                 <Button size="lg" form="product-form" type="submit">
                     Save Product
                 </Button>
@@ -366,4 +373,4 @@ const Page = () => {
     )
 }
 
-export default Page
+export default UploadProduct
