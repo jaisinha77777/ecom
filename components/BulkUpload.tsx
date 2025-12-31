@@ -4,7 +4,7 @@ import { useState } from "react"
 import Papa from "papaparse"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { uploadBulkProducts } from "@/actions/productActions"
+import { uploadBulkProducts } from "@/actions/uploadProduct"
 
 export function BulkUpload() {
   const [file, setFile] = useState<File | null>(null)

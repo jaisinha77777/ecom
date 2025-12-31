@@ -8,31 +8,35 @@ datasource db {
 }
 
 model User {
-  id                 String          @id @default(uuid())
-  email              String          @unique
-  name               String?
-  role               Role            @default(USER)
-  preferred_currency String          @default("INR")
-  cartItems          CartItem[]
-  products           Product[]
-  wishlistItems      WishlistItem[]
-  userAddresses      UserAddress[]
-  orders             Order[]
-  productReviews     ProductReview[]
+  id                      String                   @id @default(uuid())
+  email                   String                   @unique
+  name                    String?
+  role                    Role                     @default(USER)
+  preferred_currency      String                   @default("INR")
+  cartItems               CartItem[]
+  products                Product[]
+  wishlistItems           WishlistItem[]
+  userAddresses           UserAddress[]
+  orders                  Order[]
+  productReviews          ProductReview[]
+  searchQueries           SearchQuery[]
+  productViews            ProductView[]
+  userProductInteractions UserProductInteraction[]
 }
 
 model Category {
-  categoryId      Int       @id @default(autoincrement()) @map("category_id")
-  categoryName    String    @map("category_name") @db.VarChar(100)
-  categoryPath    String?   @map("category_path") @db.VarChar(500)
+  categoryId      Int           @id @default(autoincrement()) @map("category_id")
+  categoryName    String        @unique @map("category_name") @db.VarChar(100)
+  categoryPath    String?       @map("category_path") @db.VarChar(500)
   description     String?
-  imageUrl        String?   @map("image_url") @db.VarChar(500)
-  metaTitle       String?   @map("meta_title") @db.VarChar(255)
-  metaDescription String?   @map("meta_description")
-  metaKeywords    String?   @map("meta_keywords")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
+  imageUrl        String?       @map("image_url") @db.VarChar(500)
+  metaTitle       String?       @map("meta_title") @db.VarChar(255)
+  metaDescription String?       @map("meta_description")
+  metaKeywords    String?       @map("meta_keywords")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
   products        Product[]
+  productViews    ProductView[]
 }
 
 model Brand {
@@ -45,31 +49,35 @@ model Brand {
 }
 
 model Product {
-  productId      String          @id @default(uuid()) @map("product_id")
-  by             String?
-  productName    String          @map("product_name") @db.VarChar(255)
-  description    String?
-  brandId        String?         @map("brand_id")
-  categoryId     Int?            @map("category_id")
-  price          Decimal         @db.Decimal(10, 2)
-  compareAtPrice Decimal?        @map("compare_at_price") @db.Decimal(10, 2)
-  cost           Decimal?        @db.Decimal(10, 2)
-  currency       String          @default("INR") @db.VarChar(3)
-  stockQuantity  Int             @default(0) @map("stock_quantity")
-  tags           String[]
-  viewCount      Int             @default(0) @map("view_count")
-  purchaseCount  Int             @default(0) @map("purchase_count")
-  reviewCount    Int             @default(0) @map("review_count")
-  createdAt      DateTime        @default(now()) @map("created_at")
-  updatedAt      DateTime        @updatedAt @map("updated_at")
-  images         String[]
-  cartItems      CartItem[]
-  brand          Brand?          @relation(fields: [brandId], references: [brandId])
-  uploadedBy     User?           @relation(fields: [by], references: [id])
-  category       Category?       @relation(fields: [categoryId], references: [categoryId])
-  wishlistItems  WishlistItem[]
-  orderItems     OrderItem[]
-  productReviews ProductReview[]
+  productId               String                   @id @default(uuid()) @map("product_id")
+  by                      String?
+  productName             String                   @map("product_name") @db.VarChar(255)
+  description             String?
+  brandId                 String?                  @map("brand_id")
+  categoryId              Int?                     @map("category_id")
+  price                   Decimal                  @db.Decimal(10, 2)
+  compareAtPrice          Decimal?                 @map("compare_at_price") @db.Decimal(10, 2)
+  cost                    Decimal?                 @db.Decimal(10, 2)
+  currency                String                   @default("INR") @db.VarChar(3)
+  stockQuantity           Int                      @default(0) @map("stock_quantity")
+  tags                    String[]
+  viewCount               Int                      @default(0) @map("view_count")
+  purchaseCount           Int                      @default(0) @map("purchase_count")
+  reviewCount             Int                      @default(0) @map("review_count")
+  createdAt               DateTime                 @default(now()) @map("created_at")
+  updatedAt               DateTime                 @updatedAt @map("updated_at")
+  images                  String[]
+  cartItems               CartItem[]
+  brand                   Brand?                   @relation(fields: [brandId], references: [brandId])
+  uploadedBy              User?                    @relation(fields: [by], references: [id])
+  category                Category?                @relation(fields: [categoryId], references: [categoryId])
+  wishlistItems           WishlistItem[]
+  orderItems              OrderItem[]
+  productReviews          ProductReview[]
+  searchQueries           SearchQuery[]
+  searchQueryProducts     SearchQueryProduct[]
+  productViews            ProductView[]
+  userProductInteractions UserProductInteraction[]
 }
 
 model CartItem {
@@ -237,4 +245,97 @@ model ProductReview {
   orderOrder_id String?
 
   @@unique([product_id, user_id])
+}
+
+model SearchQueryProduct {
+  id BigInt @id @default(autoincrement())
+
+  productId String @map("product_id")
+
+  product Product @relation(fields: [productId], references: [productId])
+
+  createdAt     DateTime     @default(now()) @map("created_at")
+  searchQuery   SearchQuery? @relation(fields: [searchQueryId], references: [queryId])
+  searchQueryId BigInt?
+
+  @@index([productId], name: "idx_sqp_product")
+  @@map("search_query_products")
+}
+
+model SearchQuery {
+  queryId BigInt  @id @default(autoincrement()) @map("query_id")
+  userId  String? @map("user_id")
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  searchQuery      String   @map("search_query")
+  clickedProductId String?  @map("clicked_product_id")
+  product          Product? @relation(fields: [clickedProductId], references: [productId])
+
+  // NEW: relation to searched products (via join table)
+  searchedProducts SearchQueryProduct[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId], name: "idx_search_user")
+  @@index([searchQuery], name: "idx_search_query")
+  @@index([createdAt], name: "idx_search_created")
+  @@map("search_queries")
+}
+
+enum ViewSource {
+  direct
+  category
+  search
+  home
+}
+
+model ProductView {
+  viewId              BigInt      @id @default(autoincrement()) @map("view_id")
+  userId              String?     @map("user_id")
+  productId           String      @map("product_id")
+  viewedAt            DateTime    @default(now()) @map("viewed_at")
+  viewDurationSeconds Int?        @map("view_duration_seconds")
+  viewSource          ViewSource? @map("view_source")
+
+  filterCategoryName String? @map("filter_category_id")
+
+  // Relations
+  user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product        Product   @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  filterCategory Category? @relation(fields: [filterCategoryName], references: [categoryName], onDelete: Cascade)
+
+  @@index([userId], name: "idx_product_views_user")
+  @@index([productId], name: "idx_product_views_product")
+  @@index([viewedAt], name: "idx_product_views_viewed")
+  @@index([filterCategoryName], name: "idx_product_views_filter_category")
+  @@map("product_views")
+}
+
+enum InteractionType {
+  add_to_cart
+  remove_from_cart
+  add_to_wishlist
+  remove_from_wishlist
+  purchase
+  review
+}
+
+model UserProductInteraction {
+  interactionId    BigInt          @id @default(autoincrement()) @map("interaction_id")
+  userId           String          @map("user_id")
+  productId        String          @map("product_id")
+  interactionType  InteractionType @map("interaction_type")
+  createdAt        DateTime        @default(now()) @map("created_at")
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [productId], onDelete: Cascade)
+
+  // Indexes
+  @@index([userId], name: "idx_interactions_user")
+  @@index([productId], name: "idx_interactions_product")
+  @@index([interactionType], name: "idx_interactions_type")
+  @@index([createdAt], name: "idx_interactions_created")
+  @@index([userId, productId], name: "idx_interactions_user_product")
+  @@map("user_product_interactions")
 }

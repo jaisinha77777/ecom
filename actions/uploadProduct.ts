@@ -56,3 +56,74 @@ export async function uploadProduct(data:  z.infer<typeof productSchema> , image
     }
 
 }
+
+
+export async function uploadBulkProducts(rows: any[]) {
+  let success = 0
+  let failed = 0
+  const { userId } = await auth()
+  if(!userId) {
+    return { message: "Unauthorized" }
+  }
+  for (const row of rows) {
+    try {
+      const parsed = productSchema.parse({
+        productName: row.productName,
+        description: row.description,
+        brand: row.brand,
+        category: Number(row.category),
+        price: Number(row.price),
+        cost: Number(row.cost),
+        stockQuantity: Number(row.stockQuantity),
+        currency: row.currency ?? "INR",
+      })
+    //   images of the product are provided as | separated urls in the CSV
+        let images: File[] = []
+
+      if (row.imageUrls) {
+        const urls = row.imageUrls.split("|")
+
+        for (const url of urls) {
+          const res = await fetch(url)
+          const blob = await res.blob()
+
+          const file = new File([blob], url.split("/").pop() ?? "image.jpg", {
+            type: blob.type,
+          })
+
+          images.push(file)
+        }
+      }
+      const cloudinaryIds = await uploadImage(images)
+
+        await prisma.product.create({
+            data: {
+                productName: parsed.productName,
+                description: parsed.description,
+                brandId: (await prisma.brand.upsert({
+                    where: { brandName: parsed.brand.toLowerCase() },
+                    update: {},
+                    create: { brandName: parsed.brand.toLowerCase() },  
+                })).brandId,
+                categoryId: parsed.category,
+                price: parsed.price,
+                currency: parsed.currency,
+                stockQuantity: parsed.stockQuantity,
+                cost: parsed.cost,
+                images: cloudinaryIds,
+                by : userId
+            },
+        })
+
+      success++
+
+    } catch (e) {
+      console.log("Failed row:", row)
+      failed++
+    }
+  }
+
+  return {
+    message: `Uploaded ${success} products. Failed: ${failed}`,
+  }
+}

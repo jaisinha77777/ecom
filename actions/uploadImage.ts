@@ -57,3 +57,22 @@ export const uploadImage = async (images: File[]) => {
 
 
 }
+
+export const deleteImage = async (publicId: string) => {
+    try {
+        if (!process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET || !process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) {
+            console.log("Cloudinary environment variables are not set.");
+            throw new Error("Cloudinary environment variables are not set.");
+        }
+        cloudinary.uploader.destroy(publicId, function (error, result) {
+            if (error) {
+                console.log("Error deleting image from Cloudinary:", error);
+                throw new Error("Error deleting image from Cloudinary: " + error.message);
+            }
+            console.log("Image deleted from Cloudinary:", result);
+        });
+        
+    } catch (error) {
+        
+    }
+}

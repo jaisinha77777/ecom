@@ -22,7 +22,7 @@ export default function OrdersPage() {
 
   // Separate + preserve orderBy created_at desc
   const pending = orders.filter((o: any) => o.status === "pending");
-  const completed = orders.filter((o: any) => o.status === "completed");
+  const completed = orders.filter((o: any) => o.status === "confirmed");
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">

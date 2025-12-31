@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma'
 import { productSchema } from '@/schemas/productSchema';
 import { auth } from '@clerk/nextjs/server';
 import { getCldImageUrl } from 'next-cloudinary';
-import { uploadImage } from './uploadImage';
+import { deleteImage, uploadImage } from './uploadImage';
 const categories = [
     "Electronics",
     "Clothing & Fashion",
@@ -152,7 +152,7 @@ export async function getProductById(productId: string) {
     try {
         const { userId } = await auth();
         console.log("Fetching product with id:", productId);
-        if(!userId){
+        if (!userId) {
             throw new Error("User not authenticated");
         }
         const product = await prisma.product.findUnique({
@@ -210,7 +210,7 @@ export async function getProductById(productId: string) {
             inCart: product.cartItems.length > 0,
             wishlistItems: undefined,
             cartItems: undefined,
-            quantity : product.cartItems.length > 0 ? product.cartItems[0].quantity : 0
+            quantity: product.cartItems.length > 0 ? product.cartItems[0].quantity : 0
         }
         return JSON.parse(JSON.stringify(res));
     } catch (error) {
@@ -234,24 +234,24 @@ export async function getWishList() {
             },
             include: {
                 product: {
-                     select: {
+                    select: {
                         productId: true,
                         productName: true,
                         price: true,
                         images: true,
                         cost: true,
-                       
-             
-                        
+
+
+
                         category: {
-                            select: {   
+                            select: {
                                 categoryName: true
                             }
                         },
-                        brand: {    
+                        brand: {
                             select: {
                                 brandName: true,
-                                
+
                             }
                         },
                         cartItems: {
@@ -263,16 +263,16 @@ export async function getWishList() {
                             },
                             take: 1
                         },
-                        
+
                     },
-                   
+
                 }
             }
         });
 
 
         const res = wishlistItems.map((item) => ({
-            id : item.wishlistId.toString(),
+            id: item.wishlistId.toString(),
             productId: item.product.productId,
             productName: item.product.productName,
             price: item.product.price,
@@ -294,7 +294,7 @@ export async function getWishList() {
     } catch (error) {
         console.error("Error fetching wishlist:", error);
         return [];
-    }   
+    }
 }
 
 export async function getCartItems() {
@@ -324,7 +324,7 @@ export async function getCartItems() {
                                 brandName: true
                             }
                         },
-                        stockQuantity : true 
+                        stockQuantity: true
                     }
                 }
             }
@@ -343,7 +343,7 @@ export async function getCartItems() {
             quantity: item.quantity,
             category: item.product.category?.categoryName,
             brand: item.product.brand?.brandName,
-            stockQuantity : item.product.stockQuantity
+            stockQuantity: item.product.stockQuantity
         }))
         return JSON.parse(JSON.stringify(res));
     } catch (error) {
@@ -352,69 +352,183 @@ export async function getCartItems() {
     }
 }
 
-
-export async function uploadBulkProducts(rows: any[]) {
-  let success = 0
-  let failed = 0
-
-  for (const row of rows) {
+export async function getProductsByDealer() {
     try {
-      const parsed = productSchema.parse({
-        productName: row.productName,
-        description: row.description,
-        brand: row.brand,
-        category: Number(row.category),
-        price: Number(row.price),
-        cost: Number(row.cost),
-        stockQuantity: Number(row.stockQuantity),
-        currency: row.currency ?? "INR",
-      })
-    //   images of the product are provided as | separated urls in the CSV
-        let images: File[] = []
-
-      if (row.imageUrls) {
-        const urls = row.imageUrls.split("|")
-
-        for (const url of urls) {
-          const res = await fetch(url)
-          const blob = await res.blob()
-
-          const file = new File([blob], url.split("/").pop() ?? "image.jpg", {
-            type: blob.type,
-          })
-
-          images.push(file)
+        const { userId } = await auth();
+        if (!userId) {
+            throw new Error("User not authenticated");
         }
-      }
-      const cloudinaryIds = await uploadImage(images)
-
-        await prisma.product.create({
-            data: {
-                productName: parsed.productName,
-                description: parsed.description,
-                brandId: (await prisma.brand.upsert({
-                    where: { brandName: parsed.brand.toLowerCase() },
-                    update: {},
-                    create: { brandName: parsed.brand.toLowerCase() },  
-                })).brandId,
-                categoryId: parsed.category,
-                price: parsed.price,
-                currency: parsed.currency,
-                stockQuantity: parsed.stockQuantity,
-                cost: parsed.cost,
-                images: cloudinaryIds,
+        const products = await prisma.product.findMany({
+            where: {
+                by: userId
             },
+            select: {
+                productId: true,
+                productName: true,
+                price: true,
+                stockQuantity: true,
+                createdAt: true,
+                brand: {
+                    select: {
+                        brandName: true
+                    }
+                },
+                category: {
+                    select: {
+                        categoryId: true,
+                        categoryName: true
+                    }
+                }
+            }
         })
 
-      success++
+        const parsedProducts = products.map((product) => ({
+            id: product.productId,
+            name: product.productName,
+            price: product.price,
+            stockQuantity: product.stockQuantity,
+            createdAt: product.createdAt,
+            brand: product.brand?.brandName,
+            category: product.category?.categoryName,
 
-    } catch (e) {
-      console.log("Failed row:", row)
-      failed++
+        }))
+        return JSON.parse(JSON.stringify(parsedProducts));
+
+    } catch (error) {
+        console.log("Error fetching dealer products:", error);
+        return [];
     }
-  }
+}
 
-  return {
-    message: `Uploaded ${success} products. Failed: ${failed}`,
-  }
+
+export async function updateProduct({ productId, images, data }) {
+    try {
+        const { userId } = await auth();
+        if (!userId) {
+            throw new Error("User not authenticated");
+        }
+        // Find product 
+        const product = await prisma.product.findUnique({
+            where: {
+                productId: productId,
+                by: userId
+            }
+        }
+        )
+
+        if(images==null){
+            throw new Error("No images provided");
+        }
+
+        if (!product) {
+            throw new Error("Product not found or you do not have permission to edit this product");
+        }
+
+        // Remove old images from Cloudinary if new images are uploaded
+
+        for (const publicId of product.images) {
+            await deleteImage(publicId);
+        }
+
+        // Upload new images to Cloudinary
+        const uploadedImageIds = await uploadImage(images);
+        console.log("Received data " , data)
+        // Update product in database
+        const brandRecord = await prisma.brand.upsert({
+            where: { brandName: data.brand.toLowerCase() },
+            update: {},
+            create: { brandName: data.brand.toLowerCase() },
+        })
+        await prisma.product.update({
+            where: {
+                productId: productId,
+                by : userId
+            },
+            data: {
+                productName: data.productName,
+                price : data.price,
+                cost : data.cost,
+                stockQuantity : data.stockQuantity,
+                description: data.description,
+                brandId: brandRecord.brandId,
+                categoryId: data.category,
+                images: uploadedImageIds
+            }
+        }) 
+
+        return {
+            message : "Product updated successfully",
+            success : true 
+        };
+
+
+
+    } catch (error) {
+        console.log("Error updating product:", error);
+        return {
+            message : "Error updating product: " + (error as Error).message,
+            success : false 
+        };
+    }
+}
+
+
+
+export async function updateProductStockAndPrice({productId, stockQuantity, price}: {productId: string, stockQuantity: number, price: number}) {
+    try {
+        const { userId } = await auth();
+        if (!userId) {
+            throw new Error("User not authenticated");
+        }
+        await prisma.product.update({
+            where: {
+                productId: productId,
+                by: userId
+            },
+            data: {
+                stockQuantity: stockQuantity,
+                price: price
+            }
+        })
+    } catch (error) {
+        
+    }
+}
+
+export async function deleteProduct(productId: string) {
+    try {
+        const { userId } = await auth();
+        if (!userId) {
+            throw new Error("User not authenticated");
+        }
+
+        // Find product and delete the cloudinary images
+        const productImages = await prisma.product.findUnique({
+            where: {
+                productId ,
+                by: userId
+            },
+            select: {
+                images: true
+            }
+
+        })
+
+
+        for (const publicId of productImages?.images || []) {
+            await deleteImage(publicId);
+        }
+
+        await prisma.product.delete({
+            where: {
+                productId ,
+                by: userId
+            }
+        })
+        
+    } catch (error) {
+        console.log("Error deleting product:", error);
+        return null 
+    }
+
 }

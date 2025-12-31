@@ -19,7 +19,9 @@ export default function ProductCard({
   cost,
   isSaved = false,
   inCart = false,
-  stockQuantity = 0
+  stockQuantity = 0,
+  source = '',
+  filterCategory = 'All categories'
 }) {
   const router = useRouter();
   const [saved, setSaved] = useState(isSaved);
@@ -54,7 +56,7 @@ export default function ProductCard({
   return (
     <Card
       className="w-full p-0 max-w-sm rounded-2xl shadow-sm hover:shadow-md transition-shadow"
-      onClick={() => router.push(`/product/${id}`)}
+      onClick={() => router.push(`/product/${id}?source=${source}&category=${filterCategory}`)}
     >
       {/* Product Image */}
      <div className="relative h-64 overflow-hidden rounded-t-2xl bg-muted">

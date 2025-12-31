@@ -44,6 +44,7 @@ export async function createOrder({
                     subtotal,
                     total_amount: subtotal,
                     status: "confirmed",
+                    payment_status: "paid",
                     payment_method: paymentMethod,
                     shipping_address_id: addressId,
                 }
@@ -75,6 +76,14 @@ export async function createOrder({
                         total_amount: item.price * item.quantity,
                     }
                 });
+
+                await tx.userProductInteraction.create({
+                    data : {
+                        productId : item.id,
+                        interactionType : 'purchase',
+                        userId : userId
+                    }
+                })
             }
 
             return order.order_id;

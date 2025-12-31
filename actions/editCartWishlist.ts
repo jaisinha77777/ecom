@@ -1,6 +1,7 @@
 'use server'
 import prisma from '@/lib/prisma'
 import { auth } from '@clerk/nextjs/server';
+import { createProductUserInteraction } from './viewActions';
 
 
 export async function addToCart(productId: string, quantity: number) {
@@ -9,6 +10,21 @@ export async function addToCart(productId: string, quantity: number) {
         const { userId } = await auth();
         if (!userId) {
             throw new Error("User not authenticated");
+        }
+
+        // Find product in cart 
+
+        const alreadyInCart = await prisma.cartItem.findUnique({
+            where: {
+                userId_productId: {
+                    userId: userId,
+                    productId: productId
+                }
+            }
+        })
+
+        if (!alreadyInCart) {
+            await createProductUserInteraction({ productId: productId, interaction_type: 'add_to_cart' });
         }
 
         await prisma.cartItem.upsert({
@@ -27,10 +43,12 @@ export async function addToCart(productId: string, quantity: number) {
                 quantity: quantity,
             }
         })
+
+
         return true;
 
     } catch (error) {
-        console.error("Error adding to cart:", error); 
+        console.error("Error adding to cart:", error);
         return null;
     }
 
@@ -44,15 +62,27 @@ export async function deleteFromCart(id: string) {
             throw new Error("User not authenticated");
         }
 
+
+        const {productId} = await prisma.cartItem.findUnique({
+            where: {
+                cartItemId: parseInt(id)
+            },
+            select: {
+                productId: true
+            }
+        })
+
+        await createProductUserInteraction({ productId: productId, interaction_type: 'remove_from_cart' });
+
         await prisma.cartItem.delete({
             where: {
-                cartItemId : parseInt(id)
+                cartItemId: parseInt(id)
             }
         })
         return true;
 
     } catch (error) {
-        console.error("Error deleting from cart:", error); 
+        console.error("Error deleting from cart:", error);
         return null;
     }
 }
@@ -63,9 +93,9 @@ export async function toggleWishlist(productId: string) {
         if (!userId) {
             throw new Error("User not authenticated");
         }
-       const existingItem = await prisma.wishlistItem.findUnique({
+        const existingItem = await prisma.wishlistItem.findUnique({
             where: {
-                userId_productId: { 
+                userId_productId: {
                     userId: userId,
                     productId: productId
                 }
@@ -81,7 +111,8 @@ export async function toggleWishlist(productId: string) {
                 }
 
             })
-            return true  ;
+            await createProductUserInteraction({ productId: productId, interaction_type: 'remove_from_wishlist' });
+            return true;
         }
         await prisma.wishlistItem.create({
             data: {
@@ -89,7 +120,9 @@ export async function toggleWishlist(productId: string) {
                 productId: productId,
             }
         })
-        
+
+        await createProductUserInteraction({ productId: productId, interaction_type: 'add_to_wishlist' });
+
         return true;
     } catch (error) {
         console.error("Error deleting from wishlist:", error);

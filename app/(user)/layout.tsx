@@ -21,7 +21,6 @@ export default function Page({
       <CategoriesProvider>
         <AppSidebar variant="inset" />
         <SidebarInset>
-          <SiteHeader />
           <div>
             {children}
           </div>

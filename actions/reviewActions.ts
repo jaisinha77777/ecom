@@ -15,6 +15,25 @@ export async function createReview(data: {
     try {
         const { userId } = await auth();
         if (!userId) throw new Error("Unauthorized")
+        const existingReview = await prisma.productReview.findUnique({
+            where: {
+                product_id_user_id: {
+                    product_id: data.productId,
+                    user_id: userId,
+                }
+            }
+
+        })
+
+        if (!existingReview) {
+            await prisma.userProductInteraction.create({
+                data: {
+                    productId: data.productId,
+                    userId: userId,
+                    interactionType: "review"
+                }
+            })
+        }
 
         await prisma.productReview.upsert({
             where: {

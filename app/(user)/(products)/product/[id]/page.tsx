@@ -1,7 +1,7 @@
 'use client'
 
 import Image from "next/image"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Heart, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -14,15 +14,25 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import { Card } from "@/components/ui/card"
-import { useQuery } from "@tanstack/react-query"
-import { useParams, useRouter } from "next/navigation"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { getProductById } from "@/actions/productActions"
 import { useProductActions } from "@/hooks/useProductActions"
 import Reviews from "@/components/Reviews"
-import StarRating from "@/components/StarRating"
+import { useCategory } from "@/components/providers/CategoriesProvider"
+import { createProductView } from "@/actions/viewActions"
 
 export default function ProductPage() {
   const { id } = useParams();
+  const {category} = useCategory() ;
+  const searchParams = useSearchParams();
+
+  const source = searchParams.get('source') || 'direct';
+  const filterCategory = searchParams.get('category') || 'All categories' ;
+  
+
+
+
   const router = useRouter();
 
   const { data: product, error, isLoading } = useQuery({
@@ -41,6 +51,64 @@ export default function ProductPage() {
     setInCart: () => { },
   })
   const [quantity, setQuantity] = useState<number>(product?.quantity ?? 1);
+
+  const mutation = useMutation({
+    mutationFn : createProductView
+  })
+  const viewedAtRef = useRef<number | null>(null);
+  const visibleStartRef = useRef<number | null>(null);
+  const totalVisibleSRef = useRef(0);
+
+  useEffect(() => {
+    // 1️⃣ mark view start
+    const viewedAt = Date.now();
+    viewedAtRef.current = viewedAt;
+    visibleStartRef.current = viewedAt;
+
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        // tab hidden → add time elapsed
+        if (visibleStartRef.current) {
+          totalVisibleSRef.current += (Date.now() - visibleStartRef.current) / 1000; // in seconds
+          visibleStartRef.current = null;
+        }
+      } else {
+        // tab visible again
+        visibleStartRef.current = Date.now();
+      }
+    }
+
+    function flushAnalytics() {
+      // stop timer if still visible
+      if (visibleStartRef.current) {
+        totalVisibleSRef.current += (Date.now() - visibleStartRef.current) / 1000; // in seconds
+        visibleStartRef.current = null;
+      }
+
+      if(totalVisibleSRef.current > 1 && viewedAtRef.current) {
+        // send analytics
+        mutation.mutate({
+          productId : id?.toString() || '',
+          source : source as "direct" | "home" | "category" | "search",
+          viewedAt : new Date(viewedAtRef.current || Date.now()),
+          viewDuration : totalVisibleSRef.current,
+          filterCategory : filterCategory
+        })
+      }
+     
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", flushAnalytics);
+    window.addEventListener("beforeunload", flushAnalytics);
+
+    return () => {
+      flushAnalytics(); // page navigation
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pagehide", flushAnalytics);
+      window.removeEventListener("beforeunload", flushAnalytics);
+    };
+  }, []);
 
   if (isLoading) {
     return (

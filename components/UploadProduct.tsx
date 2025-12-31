@@ -33,7 +33,7 @@ const Card = ({ children }: { children: React.ReactNode }) => (
         {children}
     </div>
 )
-const CATEGORIES = [
+export const CATEGORIES = [
   { id: 1, label: "Electronics" },
   { id: 2, label: "Clothing & Fashion" },
   { id: 3, label: "Footwear" },
@@ -82,7 +82,7 @@ const SectionHeader = ({
 /* Page                               */
 /* ---------------------------------- */
 
-const Page = () => {
+const UploadProduct = () => {
     const [images, setImages] = useState<File[]>([])
     
     const form = useForm<z.infer<typeof productSchema>>({
@@ -357,7 +357,7 @@ const Page = () => {
             {/* ---------------------------------- */}
             {/* STICKY ACTION BAR                  */}
             {/* ---------------------------------- */}
-            <div className="sticky bottom-0 mt-10 bg-background/80 backdrop-blur border-t p-4 flex justify-end">
+            <div className="sticky bottom-0 mt-10  backdrop-blur border-t p-4 flex justify-end">
                 <Button size="lg" form="product-form" type="submit">
                     Save Product
                 </Button>
@@ -366,4 +366,4 @@ const Page = () => {
     )
 }
 
-export default Page
+export default UploadProduct
