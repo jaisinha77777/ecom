@@ -8,7 +8,10 @@ import {
   IconFileDescription,
   IconInnerShadowTop,
   IconShoppingBag,
-  IconHeart
+  IconHeart,
+  IconSettings,
+  IconHelp,
+  IconSearch
 } from "@tabler/icons-react"
 
 import { NavDocuments } from "@/components/nav-documents"
@@ -25,6 +28,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useUser } from "@clerk/nextjs"
+import SearchHistoryHome from "./SearchHistoryHome"
+import { ModeToggle } from "./ModeToggle"
 
 
 const data = {
@@ -152,7 +157,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
+        <SearchHistoryHome />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

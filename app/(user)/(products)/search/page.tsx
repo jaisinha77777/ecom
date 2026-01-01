@@ -24,12 +24,12 @@ export default function SearchPage({  }) {
       "category.categoryName",
     ],
   });
-
+  
+  if (isLoading) return <div>Loading...</div>;
   const results = query.length >= 3
     ? fuse.search(query).map(r => r.item)
     : [];
 
-  if (isLoading) return <div>Loading...</div>;
 
   return (
     <>

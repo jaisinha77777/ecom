@@ -28,30 +28,30 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
 
-        
-            <body
-              className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <ThemeProvider attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange>
+          <ClerkProvider>
+            <SidebarProvider
+              style={
+                {
+                  "--sidebar-width": "calc(var(--spacing) * 72)",
+                  "--header-height": "calc(var(--spacing) * 12)",
+                } as React.CSSProperties
+              }
             >
-      <ThemeProvider attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange>
-                <ClerkProvider>
-          <SidebarProvider
-            style={
-              {
-                "--sidebar-width": "calc(var(--spacing) * 72)",
-                "--header-height": "calc(var(--spacing) * 12)",
-              } as React.CSSProperties
-            }
-          >
-            <QueryProvider>
-              {children}
-            </QueryProvider>
-          </SidebarProvider>
-        </ClerkProvider>
-      </ThemeProvider>
-            </body>
+              <QueryProvider>
+                {children}
+              </QueryProvider>
+            </SidebarProvider>
+          </ClerkProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

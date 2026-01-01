@@ -18,6 +18,7 @@ import { AddressesList } from "./AddressList";
 import Link from "next/link";
 import OrdersPage from "./Orders";
 import YourReviews from "./YourReviews";
+import SearchHistoryDashboard from "./SearchHistoryDashboard";
 
 export default function DashboardPage() {
   const [phone, setPhone] = useState("");
@@ -34,18 +35,18 @@ export default function DashboardPage() {
       <Separator />
 
       <Tabs defaultValue="orders" className="space-y-6">
-        <TabsList className="grid grid-cols-3 md:grid-cols-6">
+       <TabsList className="grid grid-cols-2 md:grid-cols-4">
+
           <TabsTrigger value="orders">Orders</TabsTrigger>
           <TabsTrigger value="addresses">Addresses</TabsTrigger>
           <TabsTrigger value="search">Search History</TabsTrigger>
-          <TabsTrigger value="viewed">Products Viewed</TabsTrigger>
           <TabsTrigger value="reviews">Your Reviews</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
+
 
         {/* ORDERS */}
         <TabsContent value="orders">
-            <OrdersPage />
+          <OrdersPage />
         </TabsContent>
 
         {/* ADDRESSES */}
@@ -74,19 +75,7 @@ export default function DashboardPage() {
 
         {/* SEARCH */}
         <TabsContent value="search">
-          <Card>
-            <CardHeader>
-              <CardTitle>Search History</CardTitle>
-              <CardDescription>
-                Your recent searches and viewed categories
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                No search history yet.
-              </p>
-            </CardContent>
-          </Card>
+          <SearchHistoryDashboard />
         </TabsContent>
 
         {/* VIEWED */}

@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { SignOutButton, useClerk } from "@clerk/nextjs"
 import { UserAvatar } from "@clerk/nextjs"
+import { ModeToggle } from "./ModeToggle"
 
 export function NavUser({
   user,
@@ -29,7 +30,7 @@ export function NavUser({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="flex items-center cursor-pointer gap-2 p-2 hover:bg-gray-900 rounded-md">
+        <div className="flex items-center cursor-pointer gap-2 p-2  rounded-md">
           <UserAvatar />
           <div className="flex flex-col text-sm">
             <span className="truncate font-medium">{user.fullName}</span>
@@ -62,6 +63,8 @@ export function NavUser({
             </div>
           </SignOutButton>
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <div className="px-2 py-1"><ModeToggle /></div>          
       </DropdownMenuContent>
     </DropdownMenu>
   )

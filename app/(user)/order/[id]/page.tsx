@@ -2,7 +2,6 @@
 import { getOrderById } from '@/actions/orderActions';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
-import React from 'react'
 
 const page = () => {
     const { id } = useParams();
