@@ -1,0 +1,110 @@
+{
+  "node": {
+    "7f53572a60cee3497c6d48072ecfc4584a8bdb20c7": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "formatMetadataHeaders",
+          "filename": "Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js"
+        }
+      },
+      "layer": {
+        "app/page": "rsc"
+      },
+      "exportedName": "formatMetadataHeaders",
+      "filename": "Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js"
+    },
+    "7f6a8da8993355481c4a571a1080ebc90c36cdad67": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "collectKeylessMetadata",
+          "filename": "Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js"
+        }
+      },
+      "layer": {
+        "app/page": "rsc"
+      },
+      "exportedName": "collectKeylessMetadata",
+      "filename": "Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js"
+    },
+    "7f388f80ea2b463504af0a58828dca460515ee870b": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "deleteKeylessAction",
+          "filename": "Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js"
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      },
+      "exportedName": "deleteKeylessAction",
+      "filename": "Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js"
+    },
+    "7f3fd67300a92201fdc55dbd5bee3cc8e3a0343e02": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "syncKeylessConfigAction",
+          "filename": "Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js"
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      },
+      "exportedName": "syncKeylessConfigAction",
+      "filename": "Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js"
+    },
+    "7f75dbcee6e938f9ac215155a134b27eb2e45c4904": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "createOrReadKeylessAction",
+          "filename": "Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js"
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      },
+      "exportedName": "createOrReadKeylessAction",
+      "filename": "Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js"
+    },
+    "7fd0577bf97131ff7bb89e5059cce33dc4d809106f": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "detectKeylessEnvDriftAction",
+          "filename": "Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js"
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      },
+      "exportedName": "detectKeylessEnvDriftAction",
+      "filename": "Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js"
+    },
+    "7fb3560adfc8d7ef8cee0ac9415afbbaea4ebac232": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/server/keyless-custom-headers.js [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/keyless-actions.js [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "invalidateCacheAction",
+          "filename": "Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js"
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      },
+      "exportedName": "invalidateCacheAction",
+      "filename": "Desktop/dbms lab el/ecommerce-behviour-tracking/node_modules/@clerk/nextjs/dist/esm/app-router/server-actions.js"
+    }
+  },
+  "edge": {}
+}

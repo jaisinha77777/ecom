@@ -29,9 +29,8 @@ export default function ProductPage() {
 
   const source = searchParams.get('source') || 'direct';
   const filterCategory = searchParams.get('category') || 'All categories' ;
-  
 
-
+  const { recommendations, isLoading: recLoading } = useRecommendations(6);
 
   const router = useRouter();
 
@@ -299,6 +298,35 @@ export default function ProductPage() {
 
         </div>
       </div>
+
+      {/* ================= RECOMMENDATIONS SECTION ================= */}
+      {recommendations.length > 0 && (
+        <div className="mt-16">
+          <h2 className="text-2xl font-bold mb-6">You might also like</h2>
+          {recLoading ? (
+            <div className="flex h-[30vh] items-center justify-center">
+              Loading recommendations...
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+              {recommendations.map((recProduct) => (
+                <Card key={recProduct.productId} className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push(`/product/${recProduct.productId}`)}>
+                  <div className="relative aspect-square mb-3">
+                    <Image
+                      src={recProduct.images?.[0] || '/placeholder.jpg'}
+                      alt={recProduct.productName}
+                      fill
+                      className="object-cover rounded-lg"
+                    />
+                  </div>
+                  <h3 className="font-medium text-sm line-clamp-2 mb-2">{recProduct.productName}</h3>
+                  <p className="text-lg font-bold text-green-600">₹{recProduct.price}</p>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
